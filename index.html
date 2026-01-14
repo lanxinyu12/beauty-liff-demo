@@ -31,7 +31,7 @@
         // 1. 初始化 LIFF
         async function main() {
             try {
-                await liff.init({ liffId: "你的_LIFF_ID_填在這裡" });
+                await liff.init({ liffId: "2008885783-r3dboI7V" });
                 if (liff.isLoggedIn()) {
                     getUserProfile();
                 } else {
@@ -44,11 +44,25 @@
 
         // 2. 獲取使用者資料 (行銷關鍵：個人化體驗)
         async function getUserProfile() {
-            const profile = await liff.getProfile();
-            document.getElementById('displayName').innerText = "您好，" + profile.displayName;
+    try {
+        const profile = await liff.getProfile();
+        
+        // 1. 設定姓名
+        document.getElementById('displayName').innerText = "您好，" + profile.displayName;
+        
+        // 2. 設定頭像 (加上防錯機制)
+        if (profile.pictureUrl) {
             document.getElementById('pictureUrl').src = profile.pictureUrl;
-            document.getElementById('statusMsg').innerText = "已成功連線 LINE";
+        } else {
+            // 如果客人沒照片，顯示一張預設的美少女或店內 Logo
+            document.getElementById('pictureUrl').src = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"; 
         }
+        
+        document.getElementById('statusMsg').innerText = "已成功連線 LINE";
+    } catch (error) {
+        console.error("取得資料失敗", error);
+    }
+										
 
         // 3. 預約按鈕邏輯
         function handleReserve() {
