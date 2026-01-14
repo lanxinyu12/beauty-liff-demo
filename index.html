@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>愛米爾美學 - 會員中心</title>
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <style>
+        body { font-family: sans-serif; background-color: #f9f5f2; color: #333; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        .card { background: white; border-radius: 15px; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 100%; max-width: 350px; text-align: center; }
+        .profile-img { width: 80px; height: 80px; border-radius: 50%; border: 3px solid #d4af37; }
+        .btn { background-color: #d4af37; color: white; border: none; padding: 12px 25px; border-radius: 25px; font-size: 16px; margin-top: 20px; cursor: pointer; width: 100%; }
+        .status { font-size: 14px; color: #888; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <img id="pictureUrl" class="profile-img" src="https://via.placeholder.com/80" alt="頭像">
+        <h2 id="displayName">載入中...</h2>
+        <p>尊榮會員：黃金等級</p>
+        <hr>
+        <p style="text-align: left;">目前點數：500pt</p>
+        <p style="text-align: left;">下次預約：2026/02/14 14:00</p>
+        <button class="btn" onclick="handleReserve()">立即預約新課程</button>
+    </div>
+
+    <p class="status" id="statusMsg">LIFF 初始化中...</p>
+
+    <script>
+        // 1. 初始化 LIFF
+        async function main() {
+            try {
+                await liff.init({ liffId: "你的_LIFF_ID_填在這裡" });
+                if (liff.isLoggedIn()) {
+                    getUserProfile();
+                } else {
+                    liff.login(); // 引導登入
+                }
+            } catch (err) {
+                document.getElementById('statusMsg').innerText = "初始化失敗: " + err;
+            }
+        }
+
+        // 2. 獲取使用者資料 (行銷關鍵：個人化體驗)
+        async function getUserProfile() {
+            const profile = await liff.getProfile();
+            document.getElementById('displayName').innerText = "您好，" + profile.displayName;
+            document.getElementById('pictureUrl').src = profile.pictureUrl;
+            document.getElementById('statusMsg').innerText = "已成功連線 LINE";
+        }
+
+        // 3. 預約按鈕邏輯
+        function handleReserve() {
+            // 這裡可以導向預約表單，或是關閉視窗並在 LINE 聊天室傳送訊息
+            liff.sendMessages([{
+                type: 'text',
+                text: "我想預約明天的美甲服務！"
+            }]).then(() => {
+                alert("預約請求已送出");
+                liff.closeWindow();
+            });
+        }
+
+        main();
+    </script>
+</body>
+</html>
