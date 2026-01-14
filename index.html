@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>愛米爾美學 - 會員中心</title>
+    <title>心悅美容沙龍 - 會員中心</title>
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <style>
         body { font-family: sans-serif; background-color: #f9f5f2; color: #333; display: flex; flex-direction: column; align-items: center; padding: 20px; }
         .card { background: white; border-radius: 15px; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 100%; max-width: 350px; text-align: center; }
-        .profile-img { width: 80px; height: 80px; border-radius: 50%; border: 3px solid #d4af37; }
+        .profile-img { width: 80px; height: 80px; border-radius: 50%; border: 3px solid #d4af37; object-fit: cover; }
         .btn { background-color: #d4af37; color: white; border: none; padding: 12px 25px; border-radius: 25px; font-size: 16px; margin-top: 20px; cursor: pointer; width: 100%; }
         .status { font-size: 14px; color: #888; margin-top: 10px; }
     </style>
@@ -16,7 +16,7 @@
 <body>
 
     <div class="card">
-        <img id="pictureUrl" class="profile-img" src="https://via.placeholder.com/80" alt="頭像">
+        <img id="pictureUrl" class="profile-img" src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="頭像">
         <h2 id="displayName">載入中...</h2>
         <p>尊榮會員：黃金等級</p>
         <hr>
@@ -28,54 +28,48 @@
     <p class="status" id="statusMsg">LIFF 初始化中...</p>
 
     <script>
-        // 1. 初始化 LIFF
         async function main() {
             try {
-                await liff.init({ liffId: "2008885783-r3dboI7V" });
+                // 1. 初始化 (請務必填寫正確 ID)
+                await liff.init({ liffId: "2008885783-r3dboI7V" }); 
+                
                 if (liff.isLoggedIn()) {
                     getUserProfile();
                 } else {
-                    liff.login(); // 引導登入
+                    liff.login();
                 }
             } catch (err) {
                 document.getElementById('statusMsg').innerText = "初始化失敗: " + err;
             }
         }
 
-        // 2. 獲取使用者資料 (行銷關鍵：個人化體驗)
         async function getUserProfile() {
-    try {
-        const profile = await liff.getProfile();
-        
-        // 1. 設定姓名
-        document.getElementById('displayName').innerText = "您好，" + profile.displayName;
-        
-        // 2. 設定頭像 (加上防錯機制)
-        if (profile.pictureUrl) {
-            document.getElementById('pictureUrl').src = profile.pictureUrl;
-        } else {
-            // 如果客人沒照片，顯示一張預設的美少女或店內 Logo
-            document.getElementById('pictureUrl').src = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"; 
+            try {
+                const profile = await liff.getProfile();
+                document.getElementById('displayName').innerText = "您好，" + profile.displayName;
+                if (profile.pictureUrl) {
+                    document.getElementById('pictureUrl').src = profile.pictureUrl;
+                }
+                document.getElementById('statusMsg').innerText = "已成功連線 LINE";
+            } catch (err) {
+                console.error("抓取個人資料失敗", err);
+            }
         }
-        
-        document.getElementById('statusMsg').innerText = "已成功連線 LINE";
-    } catch (error) {
-        console.error("取得資料失敗", error);
-    }
-										
 
-        // 3. 預約按鈕邏輯
         function handleReserve() {
-            // 這裡可以導向預約表單，或是關閉視窗並在 LINE 聊天室傳送訊息
             liff.sendMessages([{
                 type: 'text',
                 text: "我想預約明天的美甲服務！"
             }]).then(() => {
                 alert("預約請求已送出");
                 liff.closeWindow();
+            }).catch((err) => {
+                console.error("傳送訊息失敗", err);
+                alert("請在 LINE 內開啟此頁面以使用預約功能");
             });
         }
 
+        // 啟動程式
         main();
     </script>
 </body>
